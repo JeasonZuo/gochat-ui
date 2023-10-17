@@ -1,15 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <WebSocketChat></WebSocketChat>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import WebSocketChat from './components/WebSocketChat'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    WebSocketChat
   }
 }
 </script>
