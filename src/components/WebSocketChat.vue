@@ -32,7 +32,7 @@ const newMessage = ref('');
 
 const handleSendMessage = () => {
   if (newMessage.value.trim() !== '') {
-    sendMessage({ message: newMessage.value, toTTNumber: 100002 });
+    sendMessage({ content: newMessage.value, toUserId: 1 });
     newMessage.value = '';
   }
 };

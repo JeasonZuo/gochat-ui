@@ -1,7 +1,7 @@
 <template>
-  <div class="common-layout" style="height: 100%;">
-    <el-container style="height: 100%;">
-      <el-header style="background: cornflowerblue;">
+  <div class="common-layout">
+    <el-container>
+      <el-header style="background: lightgray;">
         <el-row :gutter="20">
           <el-col :span="6" :offset="20">
             <el-button type="danger" @click="logOutHandler" class="exit-btn">退出登陆</el-button>
@@ -9,8 +9,8 @@
         </el-row>
       </el-header>
       <el-container>
-        <el-aside width="200px" style="background: antiquewhite;">
-            Aside
+        <el-aside width="200px" style="background: whitesmoke;">
+          <FriendList></FriendList>
         </el-aside>
         <el-main>
           <WebSocketChat></WebSocketChat>
@@ -22,11 +22,12 @@
 
 <script>
 import WebSocketChat from "@/components/WebSocketChat.vue";
+import FriendList from "@/components/FriendList.vue";
 import { useRouter } from 'vue-router';
 
 export default {
   name: "BusinessPage",
-  components: {WebSocketChat},
+  components: {WebSocketChat, FriendList},
   setup() {
     const router = useRouter();
     const logOutHandler = () => {

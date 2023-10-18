@@ -23,16 +23,16 @@ const createWebSocket = () => {
   };
 
   socket.onmessage = (event) => {
-    // const message = JSON.parse(event.data);
-    const message = event.data;
+    const message = JSON.parse(event.data);
     console.log(message)
-    messages.value.push(message);
+    messages.value.push(message.content);
   };
 }
 
 const sendMessage = (message) => {
   if (isConnected.value) {
     message.jwtToken = jwtToken
+    console.log(jwtToken)
     socket.send(JSON.stringify(message));
   } else {
     console.error('WebSocket is not connected.');
