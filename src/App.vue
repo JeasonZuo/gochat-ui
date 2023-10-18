@@ -1,17 +1,23 @@
 <template>
-  <WebSocketChat></WebSocketChat>
+  <router-view></router-view>
 </template>
 
 <script>
-import WebSocketChat from './components/WebSocketChat'
 
 export default {
   name: 'App',
   components: {
-    WebSocketChat
   }
 }
 </script>
 
 <style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  height: 100%;
+}
 </style>

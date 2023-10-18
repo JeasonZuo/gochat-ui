@@ -5,10 +5,11 @@ let socket = null;
 // const socket = new WebSocket('ws://127.0.0.1:8001/ws');
 const messages = ref([]);
 const isConnected = ref(false);
-const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6InpqeCIsImV4cCI6MTcwMDEwODUzMywibmJmIjoxNjk3NTE2NTMzLCJpYXQiOjE2OTc1MTY1MzN9.r7R-WPQ62Ad54Hq4_GAIRNauZQLsabEYxfmWWyvsWus";
+const jwtToken = localStorage.getItem('token');
 
 const createWebSocket = () => {
   socket = new WebSocket('ws://127.0.0.1:8001/ws');
+  console.log('WebSocket connect...')
 
   socket.onopen = () => {
     //连接之后立即发送一个带token的请求让后端确认用户身份
