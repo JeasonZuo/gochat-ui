@@ -11,7 +11,7 @@
 
 <script>
 import { ref } from 'vue';
-import { register } from '../api/apiService';
+import { register } from '../api/ApiService';
 import { useRouter } from 'vue-router';
 
 export default {

@@ -26,7 +26,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { login } from '../api/apiService';
+import { login } from '../api/ApiService';
 import { useRouter } from 'vue-router';
 import {ElMessage} from "element-plus";
 

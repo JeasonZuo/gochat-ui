@@ -33,6 +33,11 @@ export const register = async (credentials) => {
   return response.data;
 };
 
+export const getUserInfo = async () => {
+  const response = await axios.get(`${apiUrl}/user_info`);
+  return response.data;
+};
+
 export const getFriendList = async () => {
   const response = await axios.get(`${apiUrl}/get_friend_list`);
   return response.data;

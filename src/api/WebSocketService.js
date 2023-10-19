@@ -2,7 +2,6 @@
 import { ref, onBeforeUnmount } from 'vue';
 
 let socket = null;
-// const socket = new WebSocket('ws://127.0.0.1:8001/ws');
 const messages = ref([]);
 const isConnected = ref(false);
 const jwtToken = localStorage.getItem('token');
@@ -20,6 +19,7 @@ const createWebSocket = () => {
   socket.onclose = (event) => {
     console.log('websocket 断开: ' + event.code + ' ' + event.reason + ' ' + event.wasClean)
     isConnected.value = false;
+    createWebSocket() //断开后自动重连
   };
 
   socket.onmessage = (event) => {
@@ -32,7 +32,7 @@ const createWebSocket = () => {
 const sendMessage = (message) => {
   if (isConnected.value) {
     message.jwtToken = jwtToken
-    console.log(jwtToken)
+    messages.value.push(message.content);
     socket.send(JSON.stringify(message));
   } else {
     console.error('WebSocket is not connected.');
