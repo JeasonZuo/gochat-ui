@@ -1,12 +1,17 @@
 <template>
-  <div v-if="isConnected" style="height: 100%;">
-    <div  class="chat-window">
-      <el-scrollbar>
-        <div v-for="(message, index) in messages"
-             :key="index"
-             class="scrollbar-demo-item"
-        >
-          {{ message }}
+  <div v-if="isConnected" class="chat-window">
+    <div class="message-window">
+      <el-scrollbar ref="scrollbarRef" always>
+        <div ref="scrollbarInnerDiv">
+          <div v-for="(message, index) in currentMessages"
+               :key="index"
+               class="scrollbar-item"
+               :class="[message.fromUserId == store.currentUser.id ? 'my-msg' : 'friend-msg']"
+          >
+            <div class="msg-content">
+              {{ message.content }}
+            </div>
+          </div>
         </div>
       </el-scrollbar>
     </div>
@@ -19,7 +24,6 @@
           style="width: 60%; margin:10px"
       />
       <el-button type="success" @click="handleSendMessage" size="large">发送消息</el-button>
-      <el-button type="danger"  @click="disconnectWebSocket" size="large">断开连接</el-button>
     </div>
   </div>
   <div v-else>
@@ -29,41 +33,86 @@
 </template>
 
 <script setup>
-import { ref,watch } from "vue";
-import { useWebSocket } from '../api/WebSocketService'
-import { store } from '../store/store.js'
+import { ref,watch,nextTick } from "vue";
+import { useWebSocket } from '@/api/WebSocketService'
+import { store } from '@/store/store.js'
 
 const newMessage = ref('')
-const { messages, isConnected, sendMessage, connectWebSocket, disconnectWebSocket  } = useWebSocket()
+const currentMessages = ref([])
+const { messages, isConnected, sendMessage, connectWebSocket  } = useWebSocket()
+const scrollbarRef = ref(null)
+const scrollbarInnerDiv = ref(null)
 
 const handleSendMessage = () => {
   if (newMessage.value.trim() !== '') {
-    sendMessage({ content: newMessage.value, toUserId: store.focusFriendId });
+    sendMessage({
+      content: newMessage.value,
+      toUserId: store.focusFriendId
+    });
     newMessage.value = ''
   }
 };
 
 watch(
     () => store.focusFriendId,
-    () => {
-      messages.value = []
+    (focusUserId) => {
+      if (messages.value[focusUserId] == undefined) {
+        messages.value[focusUserId] = []
+      }
+      currentMessages.value = messages.value[focusUserId]
     }
+)
+
+watch (currentMessages,
+    async () => {
+      if (scrollbarRef.value != null) {
+        await nextTick()
+        console.log(scrollbarInnerDiv.value.clientHeight)
+        scrollbarRef.value.setScrollTop(scrollbarInnerDiv.value.clientHeight)
+      }
+    },
+    { deep: true }
 )
 </script>
 
 <style scoped>
 .chat-window {
-  height: 90%;
+  height: 100%;
 }
-.scrollbar-demo-item {
+.message-window {
+  height: 90%;
+  overflow: auto;
+}
+.scrollbar-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 50px;
   margin: 10px;
   text-align: center;
   border-radius: 4px;
-  background: var(--el-color-primary-light-9);
   color: var(--el-color-primary);
+}
+.my-msg {
+  justify-content: flex-end;
+}
+.my-msg .msg-content  {
+  background: #A9EA7A;
+}
+.friend-msg {
+  justify-content: flex-start;
+}
+.friend-msg .msg-content  {
+  background: whitesmoke;
+}
+.msg-content {
+  justify-content: left;
+  text-align: left;
+  margin: 0 20px 0 20px;
+  padding: 5px 10px;
+  max-width: 50%;
+  border-radius: 6px;
+  word-wrap: break-word;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  color: #11170C;
 }
 </style>

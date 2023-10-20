@@ -5,8 +5,12 @@
            @click="clickOnFriend(item.id)"
            :class="{ 'btnActive' : item.id == focusFriendId  }"
       >
-        <el-avatar :src="item.avatar_url"/>
-        <p class="friend-item-name" style="margin-left: 5px;"><strong>{{ item.name }}</strong></p>
+        <div class="avatar">
+          <el-avatar shape="square" :size="50" :src="item.avatar_url"/>
+        </div>
+        <div class="friend-name">
+          <strong>{{ item.name }}</strong>
+        </div>
       </div>
   </el-scrollbar>
   <p v-else>好友列表加载中</p>
@@ -54,19 +58,22 @@ onMounted(() => {
 <style scoped>
 .friend-item {
   display: flex;
-  align-items: center;
+  /*align-items: center;*/
   justify-content: flex-start;
-  height: 60px;
-  width: 95%;
+  height: 50px;
+  width: 90%;
   margin: 5px;
   text-align: left;
   border-radius: 4px;
   color: black;
+  padding: 5px;
 }
-.friend-item-name {
+.friend-name {
+  font-size: 13px;
   white-space: nowrap;         /* 禁用文本换行 */
   overflow: hidden;            /* 隐藏文本溢出部分 */
   text-overflow: ellipsis;     /* 显示省略号 */
+  margin-left: 5px;
 }
 .btnActive {
   background: #ececea;

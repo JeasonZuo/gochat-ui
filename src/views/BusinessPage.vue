@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <el-header style="background: #b5c4b1;">
+      <el-header>
         <el-row>
           <el-col :span="8"></el-col>
           <el-col :span="8">
@@ -14,7 +14,7 @@
         </el-row>
       </el-header>
       <el-container>
-        <el-aside width="200px" style="background: #fffaf4;">
+        <el-aside width="200px">
           <FriendList></FriendList>
         </el-aside>
         <el-main>
@@ -62,6 +62,20 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.el-container
+{
+  overflow: hidden;
+}
+.el-main
+{
+  overflow: hidden;
+}
+.el-header {
+  background: #b5c4b1;
+}
+.el-aside {
+  background: #fffaf4;
+}
 .el-row {
   margin-top: 10px;
 }

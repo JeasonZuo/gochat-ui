@@ -1,8 +1,9 @@
 // 创建一个 Vue Composition API 实例
 import { ref, onBeforeUnmount } from 'vue';
+import { store } from '@/store/store.js'
 
 let socket = null;
-const messages = ref([]);
+const messages = ref({});
 const isConnected = ref(false);
 const jwtToken = localStorage.getItem('token');
 
@@ -25,14 +26,27 @@ const createWebSocket = () => {
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     console.log(message)
-    messages.value.push(message.content);
+    let fromUserId = message.fromUserId
+    if (messages.value[fromUserId] == null) {
+      messages.value[fromUserId] = [message];
+    } else {
+      messages.value[fromUserId].push(message)
+    }
   };
 }
 
 const sendMessage = (message) => {
   if (isConnected.value) {
+    //记录到本地变量
+    message.fromUserId = store.currentUser.id
+    if (messages.value[message.toUserId] == null) {
+      messages.value[message.toUserId] = [message]
+    } else {
+      messages.value[message.toUserId].push(message);
+    }
+
+    //发送到服务器
     message.jwtToken = jwtToken
-    messages.value.push(message.content);
     socket.send(JSON.stringify(message));
   } else {
     console.error('WebSocket is not connected.');
