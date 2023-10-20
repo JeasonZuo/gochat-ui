@@ -42,3 +42,8 @@ export const getFriendList = async () => {
   const response = await axios.get(`${apiUrl}/get_friend_list`);
   return response.data;
 };
+
+export const getMessageList = async (credentials) => {
+  const response = await axios.get(`${apiUrl}/get_message_list?to_user_id=${credentials.toUserId}`);
+  return response.data
+}

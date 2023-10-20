@@ -25,7 +25,6 @@ const createWebSocket = () => {
 
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    console.log(message)
     let fromUserId = message.fromUserId
     if (messages.value[fromUserId] == null) {
       messages.value[fromUserId] = [message];

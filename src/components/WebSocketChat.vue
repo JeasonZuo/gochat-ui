@@ -35,7 +35,8 @@
 <script setup>
 import { ref,watch,nextTick } from "vue";
 import { useWebSocket } from '@/api/WebSocketService'
-import { store } from '@/store/store.js'
+import { store } from '@/store/store'
+import { getMessageList } from '@/api/ApiService'
 
 const newMessage = ref('')
 const currentMessages = ref([])
@@ -55,10 +56,23 @@ const handleSendMessage = () => {
 
 watch(
     () => store.focusFriendId,
-    (focusUserId) => {
+    async (focusUserId) => {
       if (messages.value[focusUserId] == undefined) {
         messages.value[focusUserId] = []
       }
+
+      //加载历史记录
+      const response = await getMessageList({"toUserId": focusUserId})
+      console.log('加载历史记录', focusUserId)
+      if (response.code == 10000) {
+        console.log(response.data)
+        response.data.forEach(item => {
+          item.fromUserId = item.from_user_id,
+          item.toUserId = item.to_user_id
+        })
+        messages.value[focusUserId] = response.data
+      }
+
       currentMessages.value = messages.value[focusUserId]
     }
 )

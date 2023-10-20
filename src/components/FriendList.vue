@@ -17,8 +17,8 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from "vue"
-import {getFriendList} from "@/api/ApiService"
+import { ref, onMounted } from "vue"
+import { getFriendList } from "@/api/ApiService"
 import { store } from '@/store/store.js'
 
 let friendList = ref([])
