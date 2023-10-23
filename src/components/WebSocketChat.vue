@@ -1,39 +1,45 @@
 <template>
-  <div v-if="isConnected" class="chat-window">
-    <div class="message-window">
-      <el-scrollbar ref="scrollbarRef" always>
-        <div ref="scrollbarInnerDiv">
-          <div v-for="(message, index) in currentMessages"
-               :key="index"
-               class="scrollbar-item"
-               :class="[message.fromUserId == store.currentUser.id ? 'my-msg' : 'friend-msg']"
-          >
-            <div class="msg-content">
-              {{ message.content }}
+  <div class="chat-window" v-show="showChatWindow" >
+    <div v-if="isConnected" class="chat-window">
+      <div class="message-window">
+        <el-scrollbar ref="scrollbarRef" always>
+          <div ref="scrollbarInnerDiv">
+            <div v-for="(message, index) in currentMessages"
+                 :key="index"
+                 class="scrollbar-item"
+                 :class="[message.fromUserId == store.currentUser.id ? 'my-msg' : 'friend-msg']"
+            >
+              <div class="msg-content">
+                {{ message.content }}
+              </div>
             </div>
           </div>
-        </div>
-      </el-scrollbar>
+        </el-scrollbar>
+      </div>
+      <div>
+        <el-input
+            v-model="newMessage"
+            @keyup.enter="handleSendMessage"
+            size="large"
+            placeholder="Please Input"
+            style="width: 60%; margin:10px"
+        />
+        <el-button type="success" @click="handleSendMessage" size="large">发送消息</el-button>
+      </div>
     </div>
-    <div>
-      <el-input
-          v-model="newMessage"
-          @keyup.enter="handleSendMessage"
-          size="large"
-          placeholder="Please Input"
-          style="width: 60%; margin:10px"
-      />
-      <el-button type="success" @click="handleSendMessage" size="large">发送消息</el-button>
+    <div v-else>
+      <p>WebSocket is not connected.</p>
+      <el-button type="success" @click="connectWebSocket">重新连接</el-button>
     </div>
   </div>
-  <div v-else>
-    <p>WebSocket is not connected.</p>
-    <el-button type="success" @click="connectWebSocket">重新连接</el-button>
+  <div v-show="!showChatWindow">
+    <h1>TT chat</h1>
+    <h1>先去加一个好友吧</h1>
   </div>
 </template>
 
 <script setup>
-import { ref,watch,nextTick } from "vue";
+import { ref,watch,nextTick,onMounted } from "vue";
 import { useWebSocket } from '@/api/WebSocketService'
 import { store } from '@/store/store'
 import { getMessageList } from '@/api/ApiService'
@@ -43,6 +49,7 @@ const currentMessages = ref([])
 const { messages, isConnected, sendMessage, connectWebSocket  } = useWebSocket()
 const scrollbarRef = ref(null)
 const scrollbarInnerDiv = ref(null)
+const showChatWindow = ref(false)
 
 const handleSendMessage = () => {
   if (newMessage.value.trim() !== '') {
@@ -54,26 +61,33 @@ const handleSendMessage = () => {
   }
 };
 
+const loadUserMessage = async (focusUserId) => {
+  if (messages.value[focusUserId] == undefined) {
+    messages.value[focusUserId] = []
+  }
+
+  //加载历史记录
+  const response = await getMessageList({"toUserId": focusUserId})
+  if (response.code == 10000) {
+    response.data.forEach(item => {
+      item.fromUserId = item.from_user_id,
+          item.toUserId = item.to_user_id
+    })
+    messages.value[focusUserId] = response.data
+  }
+
+  currentMessages.value = messages.value[focusUserId]
+}
+
 watch(
     () => store.focusFriendId,
-    async (focusUserId) => {
-      if (messages.value[focusUserId] == undefined) {
-        messages.value[focusUserId] = []
+    (focusUserId) => {
+      if (focusUserId == 0) {
+        showChatWindow.value = false
+      } else {
+        showChatWindow.value = true
       }
-
-      //加载历史记录
-      const response = await getMessageList({"toUserId": focusUserId})
-      console.log('加载历史记录', focusUserId)
-      if (response.code == 10000) {
-        console.log(response.data)
-        response.data.forEach(item => {
-          item.fromUserId = item.from_user_id,
-          item.toUserId = item.to_user_id
-        })
-        messages.value[focusUserId] = response.data
-      }
-
-      currentMessages.value = messages.value[focusUserId]
+      loadUserMessage(focusUserId)
     }
 )
 
@@ -81,12 +95,20 @@ watch (currentMessages,
     async () => {
       if (scrollbarRef.value != null) {
         await nextTick()
-        console.log(scrollbarInnerDiv.value.clientHeight)
         scrollbarRef.value.setScrollTop(scrollbarInnerDiv.value.clientHeight)
       }
     },
     { deep: true }
 )
+
+onMounted(() => {
+  if (store.focusFriendId == 0) {
+    showChatWindow.value = false
+  } else {
+    showChatWindow.value = true
+    loadUserMessage(store.focusFriendId)
+  }
+})
 </script>
 
 <style scoped>

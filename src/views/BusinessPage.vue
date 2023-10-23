@@ -6,7 +6,10 @@
           <el-col :span="8"></el-col>
           <el-col :span="8">
             <el-avatar :src="store.currentUser.avatar_url"/>
-            <strong style="margin-left: 10px;">{{store.currentUser.name}}</strong>
+            <div style="margin-left: 10px;">
+              <strong>{{store.currentUser.name}}</strong>
+              <p style="margin:0">TT number: {{store.currentUser.id + 100000}}</p>
+            </div>
           </el-col>
           <el-col :span="2" :offset="6">
             <el-button type="danger" @click="logOutHandler" class="exit-btn">退出登陆</el-button>
