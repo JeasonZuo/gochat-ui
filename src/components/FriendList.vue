@@ -13,7 +13,7 @@
         </div>
       </div>
   </el-scrollbar>
-  <p v-else>好友列表加载中</p>
+  <p v-else>好友列表为空</p>
 </template>
 
 <script setup>
