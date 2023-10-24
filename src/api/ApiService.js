@@ -7,7 +7,6 @@ axios.interceptors.request.use(
   (config) => {
     // 获取JWT令牌（从localStorage或其他地方）
     const token = localStorage.getItem('token');
-
     if (token) {
       // 在请求头中添加Authorization字段，值为Bearer后加上空格和JWT令牌
       config.headers.Authorization = `Bearer ${token}`;
@@ -19,22 +18,24 @@ axios.interceptors.request.use(
   }
 );
 
-export const login = async (credentials) => {
-  const params = {
-    'tt_number': parseInt(credentials.tt_number, 10),
-    'password': credentials.password
+export const login = async (params) => {
+  const newParams = {
+    'tt_number': parseInt(params.tt_number, 10),
+    'password': params.password
   }
-  const response = await axios.post(`${apiUrl}/sign_in`, params);
+  const response = await axios.post(`${apiUrl}/sign_in`, newParams);
   return response.data;
 };
 
-export const register = async (credentials) => {
-  const response = await axios.post(`${apiUrl}/sign_up`, credentials);
+export const register = async (params) => {
+  const response = await axios.post(`${apiUrl}/sign_up`, params);
   return response.data;
 };
 
 export const getUserInfo = async () => {
+  let now = new Date().getTime()
   const response = await axios.get(`${apiUrl}/user_info`);
+  console.log(now, new Date().getTime() - now)
   return response.data;
 };
 
@@ -43,7 +44,15 @@ export const getFriendList = async () => {
   return response.data;
 };
 
-export const getMessageList = async (credentials) => {
-  const response = await axios.get(`${apiUrl}/get_message_list?to_user_id=${credentials.toUserId}`);
+export const getMessageList = async (params) => {
+  const response = await axios.get(`${apiUrl}/get_message_list?to_user_id=${params.toUserId}`);
+  return response.data
+}
+
+export const addFriend = async (params) => {
+  const newParams = {
+    'tt_number': parseInt(params.tt_number, 10),
+  }
+  const response = await axios.post(`${apiUrl}/add_friend`, newParams);
   return response.data
 }

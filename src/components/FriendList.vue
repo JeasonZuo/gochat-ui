@@ -24,7 +24,7 @@ import { store } from '@/store/store.js'
 let friendList = ref([])
 let focusFriendId = ref(0)
 
-const getFriendListFunc = async () => {
+const getFriendListFunc = async (isFocusOnFirst = true) => {
   try {
     const response = await getFriendList()
     console.log(response)
@@ -36,8 +36,10 @@ const getFriendListFunc = async () => {
       console.log(list)
       friendList.value = list
 
-      if (list.length > 0) {
-        store.focusFriendId = focusFriendId.value = list[0].id
+      if (isFocusOnFirst) {
+        if (list.length > 0) {
+          store.focusFriendId = focusFriendId.value = list[0].id
+        }
       }
     }
   } catch (error) {
@@ -53,6 +55,10 @@ onMounted(() => {
   getFriendListFunc()
 });
 
+// eslint-disable-next-line no-undef
+defineExpose({
+  getFriendListFunc
+})
 </script>
 
 <style scoped>

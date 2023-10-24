@@ -8,7 +8,7 @@ const isConnected = ref(false);
 const jwtToken = localStorage.getItem('token');
 
 const createWebSocket = () => {
-  socket = new WebSocket('ws://127.0.0.1:8001/ws');
+  socket = new WebSocket('ws://localhost:8001/ws');
   console.log('WebSocket connect...')
 
   socket.onopen = () => {

@@ -46,7 +46,7 @@ import { getMessageList } from '@/api/ApiService'
 
 const newMessage = ref('')
 const currentMessages = ref([])
-const { messages, isConnected, sendMessage, connectWebSocket  } = useWebSocket()
+const { messages, isConnected, sendMessage, connectWebSocket } = useWebSocket()
 const scrollbarRef = ref(null)
 const scrollbarInnerDiv = ref(null)
 const showChatWindow = ref(false)
