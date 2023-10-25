@@ -29,19 +29,20 @@
                  :src="require('@/assets/edit_user.svg')"
                  alt="修改信息"
                  style="width: 25px;"
+                 @click="editInfoDialogVisible = true"
             >
             <img class='tool-icon'
                  :src="require('@/assets/add_friend.svg')"
                  alt="添加好友"
                  style="width: 30px;"
-                 @click="dialogVisible = true"
+                 @click="addFriendDialogVisible = true"
             >
           </el-scrollbar>
         </el-aside>
       </el-container>
     </el-container>
     <el-dialog
-        v-model="dialogVisible"
+        v-model="addFriendDialogVisible"
         title="添加好友"
         width="30%"
     >
@@ -49,8 +50,30 @@
       <el-input v-model="ttNumber" style="width: 50%; margin-left: 10px;"></el-input>
       <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button @click="addFriendDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="addFriendHandler">
+          确认
+        </el-button>
+      </span>
+      </template>
+    </el-dialog>
+    <el-dialog
+        v-model="editInfoDialogVisible"
+        title="修改信息"
+        width="30%"
+    >
+      <p>
+        <span>昵称:</span>
+        <el-input v-model="nickname" style="width: 50%; margin-left: 10px;"></el-input>
+      </p>
+      <p>
+        <span>头像链接:</span>
+        <el-input v-model="avatarUrl" style="width: 50%; margin-left: 10px;"></el-input>
+      </p>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="editInfoDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="editUserHandler">
           确认
         </el-button>
       </span>
@@ -65,12 +88,15 @@ import FriendList from "@/components/FriendList.vue";
 import { useRouter } from 'vue-router';
 import { onMounted, ref } from "vue";
 import { store } from "@/store/store";
-import { addFriend, getUserInfo,getFriendList } from "@/api/ApiService"
+import {addFriend, getUserInfo, editUser} from "@/api/ApiService"
 import { useWebSocket } from "@/api/WebSocketService"
 import {ElMessage} from "element-plus";
 
+const nickname = ref('')
+const avatarUrl = ref('')
+const editInfoDialogVisible = ref(false)
 const ttNumber = ref('')
-const dialogVisible = ref(false)
+const addFriendDialogVisible = ref(false)
 const friendListRef = ref(null)
 const router = useRouter();
 const { connectWebSocket } = useWebSocket()
@@ -85,11 +111,24 @@ const logOutHandler = () => {
 const addFriendHandler = async () => {
   const response = await addFriend({"tt_number": ttNumber.value})
   if (response.code == 10000) {
-    await getFriendList()
-    dialogVisible.value = false
+    addFriendDialogVisible.value = false
     ttNumber.value = ''
-    ElMessage.info('添加成功')
+    ElMessage.success('添加成功')
     await friendListRef.value.getFriendListFunc(false)
+  } else {
+    ElMessage.error(response.msg)
+  }
+}
+
+const editUserHandler = async () => {
+  const response = await editUser({
+    "name": nickname.value,
+    "avatar_url": avatarUrl.value,
+  })
+  if (response.code == 10000) {
+    editInfoDialogVisible.value = false
+    ElMessage.success('修改成功')
+    await callGetUserInfo()
   } else {
     ElMessage.error(response.msg)
   }
@@ -102,6 +141,8 @@ const callGetUserInfo = async () => {
     if (response.code == 10000) {
       response.data.avatar_url = decodeURIComponent(response.data.avatar_url)
       store.currentUser = response.data
+      nickname.value = response.data.name
+      avatarUrl.value = response.data.avatar_url
     }
   } catch (error) {
     console.error('Get user info error:', error)

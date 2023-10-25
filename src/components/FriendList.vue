@@ -27,13 +27,11 @@ let focusFriendId = ref(0)
 const getFriendListFunc = async (isFocusOnFirst = true) => {
   try {
     const response = await getFriendList()
-    console.log(response)
     if (response.code == 10000) {
       let list = response.data
       list.forEach(item => {
         item.avatar_url = decodeURIComponent(item.avatar_url)
       });
-      console.log(list)
       friendList.value = list
 
       if (isFocusOnFirst) {

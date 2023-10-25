@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = 'http://127.0.0.1:8001/api/v1';
+const apiUrl = process.env.VUE_APP_API_BASE_URL;
 
 // 添加请求拦截器，用于在请求头中添加JWT令牌
 axios.interceptors.request.use(
@@ -33,9 +33,7 @@ export const register = async (params) => {
 };
 
 export const getUserInfo = async () => {
-  let now = new Date().getTime()
   const response = await axios.get(`${apiUrl}/user_info`);
-  console.log(now, new Date().getTime() - now)
   return response.data;
 };
 
@@ -56,3 +54,9 @@ export const addFriend = async (params) => {
   const response = await axios.post(`${apiUrl}/add_friend`, newParams);
   return response.data
 }
+
+export const editUser = async (params) => {
+  const response = await axios.post(`${apiUrl}/edit_user`, params);
+  return response.data
+}
+

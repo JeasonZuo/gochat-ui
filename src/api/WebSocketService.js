@@ -8,7 +8,7 @@ const isConnected = ref(false);
 const jwtToken = localStorage.getItem('token');
 
 const createWebSocket = () => {
-  socket = new WebSocket('ws://localhost:8001/ws');
+  socket = new WebSocket(process.env.VUE_APP_WS_URL);
   console.log('WebSocket connect...')
 
   socket.onopen = () => {
